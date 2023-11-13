@@ -284,6 +284,9 @@ def updateMenu():
                                     k['Jabatan'] = tambahJabatan
                                     k['Departemen'] = tambahDepartemen
                                 print(Fore.GREEN + 'Data Karyawan Berhasil Diupdate' + Style.RESET_ALL)
+                                print("---------------------------------------")
+                                #print only updated data
+                                print(tabulate([k.values()], headers=k.keys(), tablefmt='fancy_grid'))
                                 # k['SisaCuti'] = SisaCuti
 
                             break
@@ -625,9 +628,16 @@ def sistemCuti():
                     TemplateNotifWrongIdKar()
                     continue
             elif inputCuti == 2:
-                print('Laporan Data Cuti')
-                print("---------------------------------------")
-                print(tabulate(dataCuti, headers='keys', tablefmt='fancy_grid'))
+                # print('Laporan Data Cuti')
+                # print("---------------------------------------")
+                # print(tabulate(dataCuti, headers='keys', tablefmt='fancy_grid'))
+                if dataCuti == []:
+                    templateNotifDataNotFound()
+                    continue
+                else:
+                    print('Laporan Data Cuti')
+                    print("---------------------------------------")
+                    print(tabulate(dataCuti, headers='keys', tablefmt='fancy_grid'))
                 continue
             elif inputCuti == 3:
                 print('Update Data Sisa Cuti')
