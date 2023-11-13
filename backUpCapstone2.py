@@ -88,70 +88,71 @@ def laporanMenu():
         try:
             
             inputLaporan = int(input('Silahkan Pilih Sub Menu Laporan Data Karyawan (1-4): '))
+            
+            if inputLaporan == 1:
+                if len(dataKaryawan) == 0:
+                    templateNotifDataNotFound()
+                    laporanMenu()
+                else:
+                    print('Laporan Seluruh Data Karyawan')
+                    print("---------------------------------------")
+                    print(tabulate(dataKaryawan, headers='keys', tablefmt='fancy_grid'))
+                    
+
+            elif inputLaporan == 2:
+                TemplateShowIdKarAndNama()
+
+                Laporan2 = (input('Masukkan IdKar: ')).capitalize()
+                print(f'Data Karyawan dengan IdKar: {Laporan2}')
+
+                #menggunakan enumerate untuk mengambil index dan value dari list dataKaryawan
+                for i,j in enumerate (dataKaryawan) :
+                    if Laporan2 == j['IdKar'] :
+                        for k in dataKaryawan:
+                            if Laporan2 == k['IdKar']:
+                                print(tabulate([k.values()], headers=k.keys(), tablefmt='fancy_grid'))
+                                
+                                # return laporanMenu()
+                                break
+
+                    #jika data tidak ditemukan maka akan muncul notif data tidak ada
+                    #i == len untuk mengambil index terakhir dari list dataKaryawan
+                    elif Laporan2 != j['IdKar'] and (i == len(dataKaryawan)-1):
+                        templateNotifDataNotFound()
+                        laporanMenu()            
+
+            elif inputLaporan == 3:
+                inputFilter = (input('Masukkan Departemen: ')).capitalize()
+                print(f'Data Karyawan dengan Departemen: {inputFilter}')
+                print("-----------------------------------------------------------------")
+                print("IdKar\t| Nama\t\t| Jabatan\t| Departemen")
+                print("-----------------------------------------------------------------")
+                for i,j in enumerate(dataKaryawan) :
+                    if inputFilter == j['Departemen'] :
+                        for k in dataKaryawan:
+                            if inputFilter == k['Departemen']:
+                                print('{}\t| {}  \t| {}\t| {}'.format(k['IdKar'],k['Nama'],k['Jabatan'],k['Departemen']))
+                                # print(tabulate([k.values()], headers=k.keys, tablefmt='fancy_grid'))
+                        
+                        break
+
+                    elif inputFilter != j['Departemen'] and (i == len(dataKaryawan)-1):
+                        templateNotifDataNotFound()
+                        break
+
+            elif inputLaporan == 4:
+                return
+            
+            else:
+                # templateNotifWrongInput()
+                laporanMenu()
+
         except ValueError:
             templateNotifWrongInput()
             
         
             
 
-
-        if inputLaporan == 1:
-            if len(dataKaryawan) == 0:
-                templateNotifDataNotFound()
-                laporanMenu()
-            else:
-                print('Laporan Seluruh Data Karyawan')
-                print("---------------------------------------")
-                print(tabulate(dataKaryawan, headers='keys', tablefmt='fancy_grid'))
-                
-
-        elif inputLaporan == 2:
-            TemplateShowIdKarAndNama()
-
-            Laporan2 = (input('Masukkan IdKar: ')).capitalize()
-            print(f'Data Karyawan dengan IdKar: {Laporan2}')
-
-            #menggunakan enumerate untuk mengambil index dan value dari list dataKaryawan
-            for i,j in enumerate (dataKaryawan) :
-                if Laporan2 == j['IdKar'] :
-                    for k in dataKaryawan:
-                        if Laporan2 == k['IdKar']:
-                            print(tabulate([k.values()], headers=k.keys(), tablefmt='fancy_grid'))
-                            
-                            # return laporanMenu()
-                            break
-
-                #jika data tidak ditemukan maka akan muncul notif data tidak ada
-                #i == len untuk mengambil index terakhir dari list dataKaryawan
-                elif Laporan2 != j['IdKar'] and (i == len(dataKaryawan)-1):
-                    templateNotifDataNotFound()
-                    laporanMenu()            
-
-        elif inputLaporan == 3:
-            inputFilter = (input('Masukkan Departemen: ')).capitalize()
-            print(f'Data Karyawan dengan Departemen: {inputFilter}')
-            print("-----------------------------------------------------------------")
-            print("IdKar\t| Nama\t\t| Jabatan\t| Departemen")
-            print("-----------------------------------------------------------------")
-            for i,j in enumerate(dataKaryawan) :
-                if inputFilter == j['Departemen'] :
-                    for k in dataKaryawan:
-                        if inputFilter == k['Departemen']:
-                            print('{}\t| {}  \t| {}\t| {}'.format(k['IdKar'],k['Nama'],k['Jabatan'],k['Departemen']))
-                            # print(tabulate([k.values()], headers=k.keys, tablefmt='fancy_grid'))
-                    
-                    break
-
-                elif inputFilter != j['Departemen'] and (i == len(dataKaryawan)-1):
-                    templateNotifDataNotFound()
-                    break
-
-        elif inputLaporan == 4:
-            return
-        
-        else:
-            # templateNotifWrongInput()
-            laporanMenu()
 
 #membuat id karyawan otomatis
 def buatIdKar():
@@ -171,53 +172,54 @@ def tambahMenu():
         ''')
         try:
             inputTambah = int(input('Silahkan Pilih Sub Menu Tambah Data Karyawan (1-2): '))
+            if inputTambah == 1:
+                inputIdKar = buatIdKar()
+                # inputNamaDepan = (input('Masukkan Nama Depan: ')).capitalize()
+                # inputNamaBelakang = (input('Masukkan Nama Belakang: ')).capitalize()
+                inputNama = (input('Masukan Nama : '))
+                if inputNama == '':
+                    templateDataMustBeFilled()
+                    return tambahMenu()
+                    
+                else:
+                    #menggunakan fungsi regex untuk validasi input nama tidak boleh angka\
+                    #re.search adalah mencari string yang cocok dengan pola regex
+                    #r'\d' adalah regex untuk angka
+                    #is None adalah jika tidak ada string yang cocok dengan pola regex
+                    if re.search(r'\d', inputNama) is None:
+                        tambahJabatan = (input('Masukkan Jabatan: ')).capitalize()
+                        if tambahJabatan == '':
+                            templateDataMustBeFilled()
+                            return tambahMenu()
+                        else:
+                            tambahDepartemen = (input('Masukkan Departemen: ')).capitalize()
+                            if tambahDepartemen == '':
+                                templateDataMustBeFilled()
+                                return tambahMenu()
+                            else:
+                                dataKaryawan.append({
+                                    'IdKar' : inputIdKar,
+                                    'Nama' : inputNama,
+                                    'Jabatan' : tambahJabatan,
+                                    'Departemen' : tambahDepartemen,
+                                    #sisa cuti 0 dikarenakan jika pegawai baru biasanya belum bisa cuti
+                                    'SisaCuti' : 0
+                                })
+                                print(Fore.GREEN + 'Data Karyawan Berhasil Ditambahkan' + Style.RESET_ALL)
+                                print("---------------------------------------")
+                                #print only added data
+                                print(tabulate(dataKaryawan[-1:], headers='keys', tablefmt='fancy_grid'))
+                                return tambahMenu()
+                    else:
+                        TemplateNotifInputWithNumber()
+                        return tambahMenu()
+
         except ValueError:
             templateNotifWrongInput()
             return tambahMenu()
         
 
 
-        if inputTambah == 1:
-            inputIdKar = buatIdKar()
-            # inputNamaDepan = (input('Masukkan Nama Depan: ')).capitalize()
-            # inputNamaBelakang = (input('Masukkan Nama Belakang: ')).capitalize()
-            inputNama = (input('Masukan Nama : '))
-            if inputNama == '':
-                templateDataMustBeFilled()
-                return tambahMenu()
-                
-            else:
-                #menggunakan fungsi regex untuk validasi input nama tidak boleh angka\
-                #re.search adalah mencari string yang cocok dengan pola regex
-                #r'\d' adalah regex untuk angka
-                #is None adalah jika tidak ada string yang cocok dengan pola regex
-                if re.search(r'\d', inputNama) is None:
-                    tambahJabatan = (input('Masukkan Jabatan: ')).capitalize()
-                    if tambahJabatan == '':
-                        templateDataMustBeFilled()
-                        return tambahMenu()
-                    else:
-                        tambahDepartemen = (input('Masukkan Departemen: ')).capitalize()
-                        if tambahDepartemen == '':
-                            templateDataMustBeFilled()
-                            return tambahMenu()
-                        else:
-                            dataKaryawan.append({
-                                'IdKar' : inputIdKar,
-                                'Nama' : inputNama,
-                                'Jabatan' : tambahJabatan,
-                                'Departemen' : tambahDepartemen,
-                                #sisa cuti 0 dikarenakan jika pegawai baru biasanya belum bisa cuti
-                                'SisaCuti' : 0
-                            })
-                            print(Fore.GREEN + 'Data Karyawan Berhasil Ditambahkan' + Style.RESET_ALL)
-                            print("---------------------------------------")
-                            #print only added data
-                            print(tabulate(dataKaryawan[-1:], headers='keys', tablefmt='fancy_grid'))
-                            return tambahMenu()
-                else:
-                    TemplateNotifInputWithNumber()
-                    return tambahMenu()
 
                 
                 
@@ -454,10 +456,6 @@ def clearCli():
         ''')
         try:
             inputClear = int(input('Silahkan Pilih Sub Menu Clear Cli (1-2): '))
-        except ValueError:
-            templateNotifWrongInput()
-            return clearCli()
-
             if inputClear == 1:
                 #os system clear adalah untuk membersihkan cli jika di windows itu cls dan di linux itu clear
                 os.system('clear')
@@ -465,6 +463,11 @@ def clearCli():
                 return
             elif inputClear == 2:
                 return                
+
+        except ValueError:
+            templateNotifWrongInput()
+            return clearCli()
+
             
 
 
@@ -482,39 +485,51 @@ def clearAll():
 
         try:
             inputClearAll = int(input('Silahkan Pilih Sub Menu Clear All Data Karyawan (1-3): '))
-        except:
-            templateNotifWrongInput()
-            return clearAll()
-        if inputClearAll == 1:
-            try:
-                inputValidasi = input('Apakah anda ingin menghapus data karyawan? Y/n: ')
-            except:
+            if inputClearAll == 1:
+                try:
+                    inputValidasi = input('Apakah anda ingin menghapus data karyawan? Y/n: ')
+                    if inputValidasi == 'Y':
+                        dataKaryawan.clear()
+                        print(Fore.GREEN + 'Data Karyawan Berhasil Diclear' + Style.RESET_ALL)
+                        return
+                    elif inputValidasi == 'n':
+                        clearAll()
+                    else:
+                        templateNotifWrongInput()
+                        return clearAll()
+
+                except:
+                    templateNotifWrongInput()
+                    return clearAll()
+                # inputValidasi = input('Apakah anda ingin menghapus data karyawan? Y/n: ')
+                
+            elif inputClearAll == 2:
+                try:
+                    inputValidasi = input('Apakah anda ingin menghapus data Cuti? Y/n: ')
+
+                    if inputValidasi == 'Y':
+                        dataCuti.clear()
+                        print(Fore.GREEN + 'Data Cuti Berhasil Diclear' + Style.RESET_ALL)
+                        return
+                    elif inputValidasi == 'n':
+                        return clearAll()
+                    else:
+                        templateNotifWrongInput()
+                        return clearAll()
+                except:
+                    templateNotifWrongInput()
+                    return clearAll()
+                # print('Data Cuti Berhasil Diclear')
+                
+            # elif inputClearAll == 2:
+            #     break
+            elif inputClearAll == 3:
+                return
+            else:
                 templateNotifWrongInput()
                 return clearAll()
-            # inputValidasi = input('Apakah anda ingin menghapus data karyawan? Y/n: ')
-            if inputValidasi == 'Y':
-                dataKaryawan.clear()
-                print(Fore.GREEN + 'Data Karyawan Berhasil Diclear' + Style.RESET_ALL)
-                return
-            elif inputValidasi == 'n':
-                clearAll()
-            
-        elif inputClearAll == 2:
-            dataCuti.clear()
-            inputValidasi = input('Apakah anda ingin menghapus data karyawan? Y/n: ')
-            if inputValidasi == 'Y':
-                dataKaryawan.clear()
-                print(Fore.GREEN + 'Data Karyawan Berhasil Diclear' + Style.RESET_ALL)
-                return
-            elif inputValidasi == 'n':
-                return clearAll()
-            # print('Data Cuti Berhasil Diclear')
-            
-        # elif inputClearAll == 2:
-        #     break
-        elif inputClearAll == 3:
-            return
-        else:
+
+        except ValueError:
             templateNotifWrongInput()
             return clearAll()
 
@@ -539,7 +554,127 @@ def sistemCuti():
         ''')
         # TemplateShowIdKarAndNama()
         try:
-                inputCuti = int(input('Silahkan Pilih Sub Menu Sistem Cuti Karyawan (1-4): '))
+            inputCuti = int(input('Silahkan Pilih Sub Menu Sistem Cuti Karyawan (1-4): '))
+            if inputCuti == 1:
+                TemplateShowIdKarAndNama()
+                inputIdKar = (input('Masukkan IdKar: ')).capitalize()
+                if inputIdKar == '':
+                    TemplateNotifWrongIdKar()
+                    continue
+                elif inputIdKar in [i['IdKar'] for i in dataKaryawan]:
+                    # print('IdKar Sudah Ada')
+                    print('Apakah anda ingin input pengajuan cuti?')
+                    inputCuti2 = input('Y/n: ')
+                    if inputCuti2 == 'Y':
+                        for key in dataKaryawan:
+                            if inputIdKar == key['IdKar']:
+                                try:
+                                    inputJumlahHari = int(input('Masukkan Jumlah Hari: '))
+                                    if inputJumlahHari > key['SisaCuti']:
+                                        print(Back.RED + Fore.WHITE + 'Jumlah Hari Tidak Boleh Lebih Dari Sisa Cuti' + Style.RESET_ALL)
+                                        continue
+                                    elif inputJumlahHari <= 0:
+                                        print('Jumlah Hari Tidak Boleh 0 atau Kurang Dari 0')
+                                        continue
+                                    elif inputJumlahHari <= key['SisaCuti']:
+                                        print('contoh inputan yang benar "2023-12-12"')
+                                        inputTanggalCuti = (input('Masukkan Tanggal Cuti Y/M/D: '))
+                                        #validasi tanggal cuti kosong
+                                        if inputTanggalCuti == '':
+                                            templateDataMustBeFilled()
+                                            continue
+                                        else:
+                                            #validasi tanggal cuti harus angka datetime
+                                            try:
+                                                #menggunakan datetime untuk validasi tanggal cuti harus sesuai format
+                                                datetime.datetime.strptime(inputTanggalCuti, '%Y-%m-%d')
+                                            except ValueError:
+                                                print(Back.RED + Fore.WHITE + 'Format Tanggal Cuti Salah' + Style.RESET_ALL)
+                                                continue
+                                            inputKeterangan = (input('Masukkan Keterangan: '))
+                                            dataCuti.append({
+                                                'IdCuti' : buatIdCuti(),
+                                                'IdKar' : inputIdKar,
+                                                'Nama' : key['Nama'],
+                                                'jumlahHari' : inputJumlahHari,
+                                                'TanggalCuti' : inputTanggalCuti,
+                                                'Keterangan' : inputKeterangan
+                                            })
+                                            penguranganCuti = key['SisaCuti'] - inputJumlahHari  
+                                            key['SisaCuti'] = penguranganCuti      
+
+                                            print(Fore.GREEN + 'Data Cuti Berhasil Ditambahkan' + Style.RESET_ALL )
+                                            print("---------------------------------------")
+                                            #print only added data
+                                            print(tabulate(dataCuti[-1:], headers='keys', tablefmt='fancy_grid'))
+                                            break
+
+                                    
+                                except ValueError:
+                                    templateNotifWrongInput()
+                                    continue
+
+                                    
+                    elif inputCuti2 == 'n':
+                        break
+                        
+                    else:
+                        templateNotifWrongInput()
+                        continue
+                elif inputIdKar not in [i['IdKar'] for i in dataKaryawan]:
+                    TemplateNotifWrongIdKar()
+                    continue
+            elif inputCuti == 2:
+                print('Laporan Data Cuti')
+                print("---------------------------------------")
+                print(tabulate(dataCuti, headers='keys', tablefmt='fancy_grid'))
+                continue
+            elif inputCuti == 3:
+                print('Update Data Sisa Cuti')
+                print("---------------------------------------")
+                table = [[karyawan["IdKar"], karyawan["Nama"], karyawan['SisaCuti']] for karyawan in dataKaryawan]
+
+                print(tabulate(table, headers=('IdKar', 'Nama', 'Sisa Cuti'), tablefmt="fancy_grid"))
+
+                inputIdKar = (input('Masukkan IdKar: ')).capitalize()
+                try:
+
+                    if inputIdKar == '':
+                        TemplateNotifWrongIdKar()
+                        continue
+                    elif inputIdKar in [i['IdKar'] for i in dataKaryawan]:
+                        inputValidasi = input('Apakah anda ingin mengupdate data cuti? Y/n: ')
+                        if inputValidasi == 'Y':
+                            for key in dataKaryawan:
+                                if inputIdKar == key['IdKar']:
+                                    inputJumlahHari = input('Masukkan Jumlah Hari: ')
+                                    if inputJumlahHari == '':
+                                        print(Fore.RED + 'Jumlah Hari Tidak Boleh Kosong' + Style.RESET_ALL)
+                                        continue
+                                    elif inputJumlahHari.isalpha():
+                                        print(Fore.RED + 'Jumlah Hari Harus Angka' + Style.RESET_ALL)
+                                        continue
+                                    else: 
+                                        key['SisaCuti'] = inputJumlahHari
+                                        print(Fore.GREEN + 'Data Cuti Berhasil Diupdate' + Style.RESET_ALL)
+                                        print("---------------------------------------")
+                                        #print only updated data IdKar, Nama, Jabatan, Departemen
+                                        print(tabulate([key], headers='keys', tablefmt='fancy_grid'))
+                                        break
+                        elif inputValidasi == 'n':
+                            break
+                        else:
+                            templateNotifWrongInput()
+                            continue
+                    elif inputIdKar not in [i['IdKar'] for i in dataKaryawan]:
+                        TemplateNotifWrongIdKar()
+                        continue
+                except ValueError:
+                    templateNotifWrongInput()
+                    continue
+            elif inputCuti == 4:
+                break
+
         except ValueError:
             templateNotifWrongInput()
 
@@ -547,125 +682,6 @@ def sistemCuti():
 
         # inputCuti = int(input('Silahkan Pilih Sub Menu Sistem Cuti Karyawan (1-4: '))
 
-        if inputCuti == 1:
-            TemplateShowIdKarAndNama()
-            inputIdKar = (input('Masukkan IdKar: ')).capitalize()
-            if inputIdKar == '':
-                TemplateNotifWrongIdKar()
-                continue
-            elif inputIdKar in [i['IdKar'] for i in dataKaryawan]:
-                # print('IdKar Sudah Ada')
-                print('Apakah anda ingin input pengajuan cuti?')
-                inputCuti2 = input('Y/n: ')
-                if inputCuti2 == 'Y':
-                    for key in dataKaryawan:
-                        if inputIdKar == key['IdKar']:
-                            try:
-                                inputJumlahHari = int(input('Masukkan Jumlah Hari: '))
-                                if inputJumlahHari > key['SisaCuti']:
-                                    print(Back.RED + Fore.WHITE + 'Jumlah Hari Tidak Boleh Lebih Dari Sisa Cuti' + Style.RESET_ALL)
-                                    continue
-                                elif inputJumlahHari <= 0:
-                                    print('Jumlah Hari Tidak Boleh 0 atau Kurang Dari 0')
-                                    continue
-                                elif inputJumlahHari <= key['SisaCuti']:
-                                    print('contoh inputan yang benar "2023-12-12"')
-                                    inputTanggalCuti = (input('Masukkan Tanggal Cuti Y/M/D: '))
-                                    #validasi tanggal cuti kosong
-                                    if inputTanggalCuti == '':
-                                        templateDataMustBeFilled()
-                                        continue
-                                    else:
-                                        #validasi tanggal cuti harus angka datetime
-                                        try:
-                                            #menggunakan datetime untuk validasi tanggal cuti harus sesuai format
-                                            datetime.datetime.strptime(inputTanggalCuti, '%Y-%m-%d')
-                                        except ValueError:
-                                            print(Back.RED + Fore.WHITE + 'Format Tanggal Cuti Salah' + Style.RESET_ALL)
-                                            continue
-                                        inputKeterangan = (input('Masukkan Keterangan: '))
-                                        dataCuti.append({
-                                            'IdCuti' : buatIdCuti(),
-                                            'IdKar' : inputIdKar,
-                                            'Nama' : key['Nama'],
-                                            'jumlahHari' : inputJumlahHari,
-                                            'TanggalCuti' : inputTanggalCuti,
-                                            'Keterangan' : inputKeterangan
-                                        })
-                                        penguranganCuti = key['SisaCuti'] - inputJumlahHari  
-                                        key['SisaCuti'] = penguranganCuti      
-
-                                        print(Fore.GREEN + 'Data Cuti Berhasil Ditambahkan' + Style.RESET_ALL )
-                                        print("---------------------------------------")
-                                        #print only added data
-                                        print(tabulate(dataCuti[-1:], headers='keys', tablefmt='fancy_grid'))
-                                        break
-
-                                
-                            except ValueError:
-                                templateNotifWrongInput()
-                                continue
-
-                                
-                elif inputCuti2 == 'n':
-                    sistemCuti()
-                    
-                else:
-                    templateNotifWrongInput()
-                    continue
-            elif inputIdKar not in [i['IdKar'] for i in dataKaryawan]:
-                TemplateNotifWrongIdKar()
-                continue
-        elif inputCuti == 2:
-            print('Laporan Data Cuti')
-            print("---------------------------------------")
-            print(tabulate(dataCuti, headers='keys', tablefmt='fancy_grid'))
-            continue
-        elif inputCuti == 3:
-            print('Update Data Sisa Cuti')
-            print("---------------------------------------")
-            table = [[karyawan["IdKar"], karyawan["Nama"], karyawan['SisaCuti']] for karyawan in dataKaryawan]
-
-            print(tabulate(table, headers=('IdKar', 'Nama', 'Sisa Cuti'), tablefmt="fancy_grid"))
-
-            inputIdKar = (input('Masukkan IdKar: ')).capitalize()
-            try:
-
-                if inputIdKar == '':
-                    TemplateNotifWrongIdKar()
-                    continue
-                elif inputIdKar in [i['IdKar'] for i in dataKaryawan]:
-                    inputValidasi = input('Apakah anda ingin mengupdate data cuti? Y/n: ')
-                    if inputValidasi == 'Y':
-                        for key in dataKaryawan:
-                            if inputIdKar == key['IdKar']:
-                                inputJumlahHari = input('Masukkan Jumlah Hari: ')
-                                if inputJumlahHari == '':
-                                    print(Fore.RED + 'Jumlah Hari Tidak Boleh Kosong' + Style.RESET_ALL)
-                                    continue
-                                elif inputJumlahHari.isalpha():
-                                    print(Fore.RED + 'Jumlah Hari Harus Angka' + Style.RESET_ALL)
-                                    continue
-                                else: 
-                                    key['SisaCuti'] = inputJumlahHari
-                                    print(Fore.GREEN + 'Data Cuti Berhasil Diupdate' + Style.RESET_ALL)
-                                    print("---------------------------------------")
-                                    #print only updated data IdKar, Nama, Jabatan, Departemen
-                                    print(tabulate([key], headers='keys', tablefmt='fancy_grid'))
-                                    break
-                    elif inputValidasi == 'n':
-                        sistemCuti()
-                    else:
-                        templateNotifWrongInput()
-                        continue
-                elif inputIdKar not in [i['IdKar'] for i in dataKaryawan]:
-                    TemplateNotifWrongIdKar()
-                    continue
-            except ValueError:
-                templateNotifWrongInput()
-                continue
-        elif inputCuti == 4:
-            break
                             
 
 
@@ -721,6 +737,7 @@ while True:
     elif inputMenu == 7:
         clearAll()
     elif inputMenu == 8:
+        print('Terima Kasih')
         exit()
     else:
         templateNotifWrongInput()
