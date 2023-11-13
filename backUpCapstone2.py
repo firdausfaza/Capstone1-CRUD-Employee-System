@@ -3,7 +3,14 @@ import os
 import re
 from colorama import Fore, Back, Style
 import datetime
+#import library 
+#tabulate for print table
+#os for clear cli
+#re for regex
+#colorama for color text
 
+#data karyawan dictionary on list
+#i choose dictionary and list because i can access data with key and index
 dataKaryawan = [{
     'IdKar': 'K001',
     'Nama': 'Yusrina',
@@ -43,14 +50,12 @@ dataCuti = [
         'Keterangan' : 'ada keperluan keluarga'
     },
 ]
-
+#template notif error handling
 def templateNotifDataNotFound():
-    #use colorama for color text
     print(Back.RED + Fore.WHITE + 'Data Tidak Ada' + Style.RESET_ALL)
     
 
 def templateNotifWrongInput():
-    #use colorama for color text
     print(Back.RED + Fore.WHITE + 'Pilihan yang anda Masukkan Salah' + Style.RESET_ALL)
 
 def TemplateNotifWrongIdKar():
@@ -67,9 +72,8 @@ def templateDataMustBeFilled():
     print(Back.RED + Fore.WHITE + 'Data Tidak Boleh Kosong' + Style.RESET_ALL)
     
 
-    
-#dajsdjsa
-#laporan data karyawan
+  
+#create function for menu laporan
 def laporanMenu():
         print('''
         ---------------------------------------
@@ -80,6 +84,7 @@ def laporanMenu():
         3. Filter Data Karyawan Berdasarkan Departemen
         4. Kembali ke Menu Utama
         ''')
+        #menggunakan try except untuk error handling jika user memasukkan input selain angka
         try:
             
             inputLaporan = int(input('Silahkan Pilih Sub Menu Laporan Data Karyawan (1-4): '))
@@ -106,18 +111,16 @@ def laporanMenu():
             Laporan2 = (input('Masukkan IdKar: ')).capitalize()
             print(f'Data Karyawan dengan IdKar: {Laporan2}')
 
-
+            #menggunakan enumerate untuk mengambil index dan value dari list dataKaryawan
             for i,j in enumerate (dataKaryawan) :
                 if Laporan2 == j['IdKar'] :
                     for k in dataKaryawan:
                         if Laporan2 == k['IdKar']:
-                            # print table  tabulate 
-                            # print(tabulate(k, headers='keys', tablefmt='fancy_grid'))
                             print(tabulate([k.values()], headers=k.keys(), tablefmt='fancy_grid'))
-                            # print('{}\t| {}  \t| {}\t| {}'.format(k['IdKar'],k['Nama'],k['Jabatan'],k['Departemen']))
                             laporanMenu()
 
-
+                #jika data tidak ditemukan maka akan muncul notif data tidak ada
+                #i == len untuk mengambil index terakhir dari list dataKaryawan
                 elif Laporan2 != j['IdKar'] and (i == len(dataKaryawan)-1):
                     templateNotifDataNotFound()
                     laporanMenu()            
@@ -147,6 +150,7 @@ def laporanMenu():
             templateNotifWrongInput()
             laporanMenu()
 
+#membuat id karyawan otomatis
 def buatIdKar():
     if len(dataKaryawan) == 0:
         return 'K001'
@@ -180,6 +184,10 @@ def tambahMenu():
                 return tambahMenu()
                 
             else:
+                #menggunakan fungsi regex untuk validasi input nama tidak boleh angka\
+                #re.search adalah mencari string yang cocok dengan pola regex
+                #r'\d' adalah regex untuk angka
+                #is None adalah jika tidak ada string yang cocok dengan pola regex
                 if re.search(r'\d', inputNama) is None:
                     tambahJabatan = (input('Masukkan Jabatan: ')).capitalize()
                     if tambahJabatan == '':
@@ -196,6 +204,7 @@ def tambahMenu():
                                 'Nama' : inputNama,
                                 'Jabatan' : tambahJabatan,
                                 'Departemen' : tambahDepartemen,
+                                #sisa cuti 0 dikarenakan jika pegawai baru biasanya belum bisa cuti
                                 'SisaCuti' : 0
                             })
                             print(Fore.GREEN + 'Data Karyawan Berhasil Ditambahkan' + Style.RESET_ALL)
@@ -380,15 +389,6 @@ def updateMenu():
             templateNotifWrongInput()
             updateMenu()
 
-
-
-
-
-        
-
-        
-            
-
                     
 def hapusMenu():
     while True:
@@ -454,6 +454,7 @@ def clearCli():
             return clearCli()
 
             if inputClear == 1:
+                #os system clear adalah untuk membersihkan cli jika di windows itu cls dan di linux itu clear
                 os.system('clear')
                 print(Fore.GREEN + 'Cli Berhasil Diclear' + Style.RESET_ALL)
                 return
@@ -571,6 +572,7 @@ def sistemCuti():
                                 else:
                                     #validasi tanggal cuti harus angka datetime
                                     try:
+                                        #menggunakan datetime untuk validasi tanggal cuti harus sesuai format
                                         datetime.datetime.strptime(inputTanggalCuti, '%Y-%m-%d')
                                     except ValueError:
                                         print(Back.RED + Fore.WHITE + 'Format Tanggal Cuti Salah' + Style.RESET_ALL)
@@ -608,10 +610,9 @@ def sistemCuti():
             print(tabulate(dataCuti, headers='keys', tablefmt='fancy_grid'))
             continue
         elif inputCuti == 3:
-            print('Update Data Cuti')
+            print('Update Data Sisa Cuti')
             print("---------------------------------------")
             table = [[karyawan["IdKar"], karyawan["Nama"], karyawan['SisaCuti']] for karyawan in dataKaryawan]
-            # print(tabulate(table, headers=('IdKar', 'Nama'), tablefmt="fancy_grid"))
 
             print(tabulate(table, headers=('IdKar', 'Nama', 'Sisa Cuti'), tablefmt="fancy_grid"))
 
@@ -675,7 +676,7 @@ def sistemCuti():
 while True:
     print('''
     ---------------------------------------------------------
-    Selamat Datang di Program Data Karyawan PT Power Telecom :
+    Selamat Datang di Program Data Karyawan Dan Cuti PT Power Telecom :
     ---------------------------------------------------------
     1. Laporan Data Karyawan
     2. Tambah Data Karyawan
